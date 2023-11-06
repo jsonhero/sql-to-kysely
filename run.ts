@@ -8,7 +8,7 @@ import { PostgreSQLToKyselyVisitor } from './src/PostgreSQLToKyselyVisitor'
 const visitor = new PostgreSQLToKyselyVisitor();
 
 function convertSQLToKysely(inputSQL: string): string {
-  const chars = new CharStream(inputSQL); // replace this with a FileStream as required
+  const chars = new CharStream(inputSQL);
   const lexer = new PostgreSQLLexer(chars);
   const tokens = new CommonTokenStream(lexer);
   const parser = new PostgreSQLParser(tokens);
@@ -28,12 +28,12 @@ const rl = readline.createInterface({
 function getUserInput() {
   rl.question('Enter SQL query: ', (userInput) => {
     if (userInput.toLowerCase() === 'exit') {
-      rl.close(); // Close the readline interface to exit
+      rl.close();
     } else {
       console.log('\n-------------\n\n')
       console.log(convertSQLToKysely(userInput.trim()))
       console.log('\n\n-------------')
-      getUserInput(); // Ask for input again
+      getUserInput();
     }
   });
 }
