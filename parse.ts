@@ -1,7 +1,7 @@
 import * as readline from 'readline';
 import { CharStream, CommonTokenStream, ParseTreeWalker }  from 'antlr4';
 import { PostgreSQLLexer } from './parser/PostgreSQLLexer';
-import { ColidContext, ColumnElemContext, ColumnlistContext, ColumnrefContext, From_listContext, Join_qualContext, PostgreSQLParser, Select_clauseContext, SelectstmtContext, Simple_select_pramaryContext, Table_refContext, Target_labelContext, Target_listContext, A_exprContext, Where_clauseContext, A_expr_orContext, A_expr_betweenContext } from './parser/PostgreSQLParser';
+import { ColidContext, ColumnElemContext, ColumnlistContext, ColumnrefContext, From_listContext, Join_qualContext, PostgreSQLParser, Select_clauseContext, SelectstmtContext, Simple_select_pramaryContext, Table_refContext, Target_labelContext, Target_listContext, A_exprContext, Where_clauseContext, A_expr_orContext, A_expr_betweenContext, A_expr_likeContext } from './parser/PostgreSQLParser';
 import PostgreSQLParserListener from './parser/PostgreSQLParserListener'
 import PostgreSQLVisitor from './parser/PostgreSQLParserVisitor'
 import { 
@@ -12,7 +12,6 @@ import {
   PostgresIntrospector,
   PostgresQueryCompiler,
 } from 'kysely'
-import { ColumnDeclarationContext } from 'dt-sql-parser/dist/lib/generic/SqlParser';
 
 interface Person {
   id: Generated<number>
@@ -60,6 +59,8 @@ class PostgreSQLToKyselyVisitor extends PostgreSQLVisitor<string> {
     // Handle selects
     const selectList = ctx.opt_target_list().target_list().accept(this)
     code += `.select(['${selectList}'])`
+
+    
 
     // Handle wheres
     if (ctx.where_clause().WHERE() !== null) {
@@ -157,7 +158,6 @@ class PostgreSQLToKyselyVisitor extends PostgreSQLVisitor<string> {
 
 
   visitColumnref = (ctx: ColumnrefContext) => {
-    console.log('wat')
     return ctx.getText()
   }
 
@@ -198,15 +198,47 @@ class PostgreSQLToKyselyVisitor extends PostgreSQLVisitor<string> {
     if (compare.EQUAL() !== null) {
       code += '.where('
 
-      code += `'${compare.a_expr_like(0).getText()}', '=', '${compare.a_expr_like(0).getText()}'`
+      code += `'${compare.a_expr_like(0).accept(this)}', '=', '${compare.a_expr_like(1).accept(this)}'`
   
       code += ')'
     } else {
-      code += compare.getText()
+      if (compare.a_expr_like_list().length === 1) {
+        code = compare.a_expr_like(0).accept(this)
+      } else {
+        code += compare.getText()
+      }
     }
 
     return code
   }
+
+  visitA_expr_like = (ctx: A_expr_likeContext) => {
+    const cExpr = ctx
+      .a_expr_qual_op(0)
+      .a_expr_unary_qualop(0)
+      .a_expr_add()
+      .a_expr_mul(0)
+      .a_expr_caret(0)
+      .a_expr_unary_sign()
+      .a_expr_at_time_zone()
+      .a_expr_collate()
+      .a_expr_typecast()
+      // Child? expression
+      .c_expr()
+    
+    if (cExpr.getChildCount() === 1) {
+      const child = cExpr.getChild(0)
+      if (child instanceof ColumnrefContext) {
+        child.accept(this)
+      }
+
+    }
+
+  
+    return ctx.getText()
+  }
+
+
 
 
   // Implement other methods for different SQL statement components
@@ -229,7 +261,6 @@ class PostgreSQLToKyselyVisitor extends PostgreSQLVisitor<string> {
 // const walker = new MyTreeWalker();
 // ParseTreeWalker.DEFAULT.walk(walker, tree);
 
-// console.log(code, ':: code')
 
 
 const visitor = new PostgreSQLToKyselyVisitor();
@@ -265,4 +296,6 @@ function getUserInput() {
   });
 }
 
-getUserInput();
+// getUserInput();
+
+console.log(convertSQLToKysely("SELECT test.* FROM test"))
