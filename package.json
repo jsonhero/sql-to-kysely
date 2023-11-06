@@ -2,9 +2,9 @@
   "name": "sql-to-kysely",
   "version": "1.0.0",
   "description": "",
-  "main": "parse.ts",
+  "main": "run.ts",
   "scripts": {
-    "start": "tsx parse.ts",
+    "start": "tsx run.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "jasonhero",

@@ -1,50 +1,8 @@
-import * as readline from 'readline';
-import { CharStream, CommonTokenStream, ParseTreeWalker }  from 'antlr4';
-import { PostgreSQLLexer } from './parser/PostgreSQLLexer';
-import { ColidContext, ColumnElemContext, ColumnlistContext, ColumnrefContext, From_listContext, Join_qualContext, PostgreSQLParser, Select_clauseContext, SelectstmtContext, Simple_select_pramaryContext, Table_refContext, Target_labelContext, Target_listContext, A_exprContext, Where_clauseContext, A_expr_orContext, A_expr_betweenContext, A_expr_likeContext } from './parser/PostgreSQLParser';
-import PostgreSQLParserListener from './parser/PostgreSQLParserListener'
-import PostgreSQLVisitor from './parser/PostgreSQLParserVisitor'
-import { 
-  Generated,
-  DummyDriver,
-  Kysely,
-  PostgresAdapter,
-  PostgresIntrospector,
-  PostgresQueryCompiler,
-} from 'kysely'
+import { ColidContext, ColumnElemContext, ColumnlistContext, ColumnrefContext, From_listContext, Join_qualContext, PostgreSQLParser, Select_clauseContext, SelectstmtContext, Simple_select_pramaryContext, Table_refContext, Target_labelContext, Target_listContext, A_exprContext, Where_clauseContext, A_expr_orContext, A_expr_betweenContext, A_expr_likeContext } from '../__generated__/PostgreSQLParser';
+import PostgreSQLVisitor from '../__generated__/PostgreSQLParserVisitor'
 
-interface Person {
-  id: Generated<number>
-  first_name: string
-  last_name: string | null
-}
 
-interface Post {
-  id: Generated<number>
-  text: string
-  person_id: string
-}
-
-interface Database {
-  person: Person;
-  post: Post;
-}
-
-const db = new Kysely<Database>({
-  dialect: {
-    createAdapter: () => new PostgresAdapter(),
-    createDriver: () => new DummyDriver(),
-    createIntrospector: (db) => new PostgresIntrospector(db),
-    createQueryCompiler: () => new PostgresQueryCompiler(),
-  },
-})
-
-// db.selectFrom('person')
-// .innerJoin('post', 'post.person_id', 'person.id')
-// .where('person.first_name', '=', 'Jason')
-// .select(['id', 'first_name', 'last_name'])
-
-class PostgreSQLToKyselyVisitor extends PostgreSQLVisitor<string> {
+export class PostgreSQLToKyselyVisitor extends PostgreSQLVisitor<string> {
   // selectFrom()
   // visitSelectstmt =(ctx: SelectstmtContext) => {
 
@@ -237,65 +195,4 @@ class PostgreSQLToKyselyVisitor extends PostgreSQLVisitor<string> {
   
     return ctx.getText()
   }
-
-
-
-
-  // Implement other methods for different SQL statement components
 }
-
-
-// class MyTreeWalker extends PostgreSQLParserListener {
-//   enterSelectstmt = (ctx: SelectstmtContext) => {
-//     code += "selectFrom("
-//   }
-
-//   enterColumnref = (ctx: ColumnrefContext) => {
-//     code += ctx.colid().identifier().getText()
-//   }
-
-
-
-// }
-// const tree = parser.stmt();
-// const walker = new MyTreeWalker();
-// ParseTreeWalker.DEFAULT.walk(walker, tree);
-
-
-
-const visitor = new PostgreSQLToKyselyVisitor();
-
-function convertSQLToKysely(inputSQL: string): string {
-  const chars = new CharStream(inputSQL); // replace this with a FileStream as required
-  const lexer = new PostgreSQLLexer(chars);
-  const tokens = new CommonTokenStream(lexer);
-  const parser = new PostgreSQLParser(tokens);
-  const kyselyCode = visitor.visit(parser.simple_select_pramary());
-
-  return kyselyCode
-}
-
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-
-
-function getUserInput() {
-  rl.question('Enter SQL query: ', (userInput) => {
-    if (userInput.toLowerCase() === 'exit') {
-      rl.close(); // Close the readline interface to exit
-    } else {
-      console.log('\n-------------\n\n')
-      console.log(convertSQLToKysely(userInput.trim()))
-      console.log('\n\n-------------')
-      getUserInput(); // Ask for input again
-    }
-  });
-}
-
-// getUserInput();
-
-console.log(convertSQLToKysely("SELECT test.* FROM test"))

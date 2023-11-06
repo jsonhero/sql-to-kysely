@@ -1,7 +1,7 @@
 import { TokenStream, CharStreams, Lexer, CommonTokenStream, Parser } from 'antlr4';
-import { PostgreSQLLexer } from './PostgreSQLLexer'; // Assuming you have the PostgreSQLLexer defined
-import { PostgreSQLParser } from './PostgreSQLParser'; // Assuming you have the PostgreSQLParser defined
-import { Createfunc_opt_listContext, Createfunc_opt_itemContext, SconstContext } from './PostgreSQLParser'; // Assuming you have the PostgreSQLParser defined
+import { PostgreSQLLexer } from '../__generated__/PostgreSQLLexer';
+import { PostgreSQLParser } from '../__generated__/PostgreSQLParser';
+import { Createfunc_opt_listContext, Createfunc_opt_itemContext, SconstContext } from '../__generated__/PostgreSQLParser';
 
 export abstract class PostgreSQLParserBase extends Parser {
     constructor(input: TokenStream) {
@@ -113,6 +113,7 @@ export abstract class PostgreSQLParserBase extends Parser {
         const tokens = new CommonTokenStream(lexer);
         const parser = new PostgreSQLParser(tokens);
 
+        // Will add these back soon..
         // lexer.removeErrorListeners();
         // parser.removeErrorListeners();
 

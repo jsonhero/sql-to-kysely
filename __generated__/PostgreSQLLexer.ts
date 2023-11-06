@@ -13,7 +13,7 @@ import {
 } from "antlr4";
 
 
-import { PostgreSQLLexerBase } from './PostgreSQLLexerBase';
+import { PostgreSQLLexerBase } from '../src/PostgreSQLLexerBase';
 
 export class PostgreSQLLexer extends PostgreSQLLexerBase {
 	public static readonly Dollar = 1;

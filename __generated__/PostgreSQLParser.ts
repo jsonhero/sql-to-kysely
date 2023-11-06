@@ -20,7 +20,7 @@ type int = number;
 
 
 
-import { PostgreSQLParserBase } from './PostgreSQLParserBase';
+import { PostgreSQLParserBase } from '../src/PostgreSQLParserBase';
 
 export class PostgreSQLParser extends PostgreSQLParserBase {
 	public static readonly Dollar = 1;

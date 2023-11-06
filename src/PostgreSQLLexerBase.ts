@@ -1,5 +1,5 @@
 import { CharStream, Lexer } from "antlr4";
-import { PostgreSQLParser } from "./PostgreSQLParser";
+import { PostgreSQLParser } from "../__generated__/PostgreSQLParser";
 
 function isLetter(str: string) {
     return str.length === 1 && str.match(/[a-z]/i);
