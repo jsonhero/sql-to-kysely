@@ -1,0 +1,21 @@
+{
+  "name": "java-playground",
+  "version": "1.0.0",
+  "description": "",
+  "main": "parse.ts",
+  "scripts": {
+    "start": "tsx parse.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jasonhero",
+  "license": "ISC",
+  "dependencies": {
+    "antlr4": "^4.13.1",
+    "kysely": "^0.26.3",
+    "readline": "^1.3.0",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "tsx": "^3.14.0"
+  }
+}
